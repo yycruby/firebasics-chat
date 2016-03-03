@@ -1,0 +1,22 @@
+{
+  "firebase": "FIREBASE_APP",
+  "public": "public",
+  "ignore": [
+    "firebase.json",
+    "**/.*",
+    "**/node_modules/**"
+  ],
+
+  "rules": {
+    ".read": true,
+    ".write": "auth != null",
+
+    "messages": {
+      "$msg_id": {
+        "text": { ".validate": "newData.isString() && newData.val().length > 0" },
+        "username": { ".validate": "newData.isString() && newData.val().length > 0" }
+      }
+    }
+
+  }
+}

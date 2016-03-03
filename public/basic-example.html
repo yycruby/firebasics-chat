@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Firebasics Chat</title>
+  <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container chat">
+    <h3>Firebasics Chat</h3>
+    <input id="usernameInput" placeholder="Username" />
+    <ul id="messages" class="messages"></ul>
+    <input id="messageInput" placeholder="Say something..." />
+  </div>
+  <script>
+    var firebase = new Firebase('://FIREBASE_APP.firebaseio.com/messages');
+
+    firebase.on('child_added', function (snapshot) {
+      var messageData = snapshot.val();
+      var userElement = $('<span>').addClass('username').text(messageData.username);
+      var messageElement = $('<li>').text(messageData.text).prepend(userElement);
+
+      $('#messages').append(messageElement);
+    });
+
+    var messageInput = $('#messageInput');
+    var usernameInput = $('#usernameInput');
+    messageInput.keypress(function (e) {
+      var username = usernameInput.val() || 'anonymous';
+      var text = messageInput.val();
+
+      if(text.length == 0) return;
+
+      if(e.keyCode === 13) {
+        var messageData = {
+          username: username,
+          text: text
+        }
+
+        firebase.push(messageData);
+
+        messageInput.val('');
+      }
+    });
+  </script>
+</body>
+</html>
+

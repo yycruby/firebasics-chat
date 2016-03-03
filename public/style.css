@@ -1,0 +1,21 @@
+@import url("https://fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.css");
+@import url("https://cdnjs.cloudflare.com/ajax/libs/milligram/1.1.0/milligram.min.css");
+
+.chat { margin: 60px auto; width: 480px; }
+input { border: 1px solid #E0E0E0; padding: 6px; width: 100%; }
+input:disabled { border-color: #FCFCFC; color: #FCFCFC; }
+input:disabled::-webkit-input-placeholder { color: #F0F0F0; }
+
+.messages { border: 1px solid #E0E0E0; padding: 0; max-height: 640px; }
+.messages li { list-style: none; margin: 0; padding: 6px 18px; }
+.messages li:nth-child(even) { background: #F0F0F0; }
+.messages .username { font-weight: bold; margin-right: 6px; }
+.messages .avatar { border-radius: 8px; }
+.messages .loading { font-style: italic; }
+
+.auth button { font-size: .8rem; height: 2.8rem; line-height: 2.8rem; padding: 0 1.5rem; margin-right: 6px; }
+.auth .authInfo { margin-right: 12px; }
+
+.json { font-family: 'Menlo', 'Monaco', monospace; height: 440px; }
+.json.invalid { background-color: rgba(233, 33, 0, 0.03); border-color: #E97D8A; }

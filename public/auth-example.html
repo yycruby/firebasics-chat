@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Firebasics Chat</title>
+  <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container chat">
+    <h3>Firebasics Chat</h3>
+    <div id="auth" class="auth"></div>
+    <ul id="messages" class="messages"></ul>
+    <input id="messageInput" placeholder="Say something..." />
+  </div>
+  <script>
+    var firebase = new Firebase('://FIREBASE_APP.firebaseio.com');
+    var messagesRef = firebase.child('messages');
+    var usersRef = firebase.child('users');
+
+    var auth = $('#auth');
+    var messages = $('#messages');
+    var messageInput = $('#messageInput');
+
+    // Handle auth events from Firebase.
+    firebase.onAuth(function (authData) {
+      authData ? authGranted(authData) : authRevoked();
+    });
+
+    function authGranted (authData) {
+      var username = authData[authData.provider].username || 'Guest';
+      var userData = { name: username, provider: authData.provider };
+      usersRef.child(authData.uid).set(userData);
+
+      messageInput.attr({ disabled: false });
+
+      var authInfo = $('<span class="authInfo">').text('Logged in as: ' + username);
+      var logoutButton = $('<button>Logout</button>').addClass('button-outline');
+      logoutButton.click(function (e) {
+        firebase.unauth();
+      });
+
+      auth.empty();
+      auth.append(authInfo).append(logoutButton);
+    }
+
+    function authRevoked () {
+      var authCallback = function (error, authData) {
+        if(error) { console.error("Login failed!", error); }
+      };
+
+      var loginGithubButton = $('<button>Login with GitHub</button>');
+      loginGithubButton.click(function (e) {
+        firebase.authWithOAuthPopup('github', authCallback, { remember: 'sessionOnly' });
+      });
+
+      var loginGuestButton = $('<button>Login as Guest</button>');
+      loginGuestButton.click(function (e) {
+        firebase.authAnonymously(authCallback, { remember: 'sessionOnly' });
+      });
+
+      auth.empty();
+      auth.append(loginGuestButton, loginGithubButton);
+      messageInput.attr({ disabled: true });
+    }
+
+    var messagesQuery = messagesRef.orderByChild('timestamp').limitToLast(10);
+    messagesQuery.on('child_added', function (snapshot) {
+      var messageData = snapshot.val();
+
+      usersRef.child(messageData.user_uid).once('value', function (snapshot) {
+        var userData = snapshot.val();
+
+        var messageAuthor = $('<span class="username">').text(userData.name);
+        var messageText = $('<span class="text">').text(messageData.text);
+        var messageElement = $('<li>').append(messageAuthor, messageText);
+
+        messages.append(messageElement);
+        messages[0].scrollTop = messages[0].scrollHeight;
+      });
+    });
+
+    messageInput.keypress(function (e) {
+      var text = messageInput.val();
+      if(text.length == 0) return;
+
+      if(e.keyCode === 13) {
+        var authData = firebase.getAuth();
+        var messageData = {
+          text: text,
+          user_uid: authData.uid,
+          timestamp: Firebase.ServerValue.TIMESTAMP
+        }
+
+        messagesRef.push(messageData);
+
+        messageInput.val('');
+      }
+    });
+  </script>
+</body>
+</html>
+

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Firebasics</title>
+  <script src="https://cdn.firebase.com/js/client/2.4.1/firebase.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.1/jquery.js"></script>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+  <div class="container chat">
+    <h3>Publisher</h3>
+    <textarea id="jsonInput" class="json"></textarea>
+    <button id="submit">Submit</button>
+  </div>
+
+  <script>
+    var firebase = new Firebase('://FIREBASE_APP.firebaseio.com/example');
+    var jsonInput = $('#jsonInput');
+    var submit = $('#submit');
+
+    submit.click(function (e) {
+      e.preventDefault();
+
+      try {
+        var value = JSON.parse(jsonInput.val());
+        firebase.set(value);
+      } catch (err) {
+        console.warn('Invalid JSON');
+        jsonInput.addClass('invalid');
+      }
+    });
+
+    jsonInput.keypress(function (e) {
+      jsonInput.removeClass('invalid');
+    });
+  </script>
+</body>
+</html>
+

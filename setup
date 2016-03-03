@@ -1,0 +1,5 @@
+
+#!/bin/bash
+
+FIREBASE_APP="${1:-FIREBASE_APP}"
+perl -i -p -e "s/[-_a-zA-Z0-9]+\.firebaseio\.com/${FIREBASE_APP}.firebaseio.com/g;" public/*.html
